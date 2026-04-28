@@ -17,7 +17,12 @@
 
 body {
   font-family: 'Space Grotesk', sans-serif;
-  background: linear-gradient(135deg, #FFE3B2 0%, #FF914D 45%, #FF3532 100%);
+  background-color: #1a0a00;
+  background-image: url('Desktop.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,8 +32,27 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Dark overlay so text stays readable over any photo */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Mobile — swap to portrait image, fix iOS fixed attachment bug */
+@media (max-width: 600px) {
+  body {
+    background-image: url('Mobile.png');
+    background-attachment: scroll;
+  }
+}
+
 .container {
   position: relative;
+  z-index: 1;
   width: 90vw;
   max-width: 900px;
   height: 80vh;
@@ -39,7 +63,7 @@ body {
   gap: 20px;
 }
 
-/* Boxes — press glow effect kept, transition only on transform+box-shadow */
+/* Boxes */
 .box {
   background-color: rgba(0,0,0,0.15);
   border: 1px solid rgba(255,227,178,0.2);
@@ -142,7 +166,6 @@ body {
   max-height: 90vh;
   overflow-y: auto;
   will-change: transform, opacity;
-  /* animation triggered by class */
   opacity: 0;
   transform: translateY(16px);
   transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.18s ease;
@@ -206,7 +229,6 @@ input, textarea, select {
   color: #FFE3B2;
   appearance: none;
   -webkit-appearance: none;
-  /* targeted transitions only — no 'all' */
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -229,7 +251,6 @@ select {
 }
 
 select option { background: #3a1a00; color: #FFE3B2; }
-
 select.ph { color: rgba(255,227,178,0.55); }
 
 textarea { resize: vertical; min-height: 90px; }
@@ -308,7 +329,7 @@ textarea { resize: vertical; min-height: 90px; }
         </select>
       </div>
       <input type="text" placeholder="Budget" required>
-      <input type="tel"  placeholder="Phone Number *" required>
+      <input type="tel" placeholder="Phone Number *" required>
       <textarea placeholder="Anything you'd like us to know?"></textarea>
       <button class="submit-btn" onclick="submitForm('BUY')">Submit</button>
     </div>
@@ -330,7 +351,7 @@ textarea { resize: vertical; min-height: 90px; }
         </select>
       </div>
       <input type="text" placeholder="Expected Price" required>
-      <input type="tel"  placeholder="Phone Number *" required>
+      <input type="tel" placeholder="Phone Number *" required>
       <textarea placeholder="Anything you'd like us to know?"></textarea>
       <button class="submit-btn" onclick="submitForm('SELL')">Submit</button>
     </div>
@@ -352,7 +373,7 @@ textarea { resize: vertical; min-height: 90px; }
         </select>
       </div>
       <input type="text" placeholder="Budget (per month)" required>
-      <input type="tel"  placeholder="Phone Number *" required>
+      <input type="tel" placeholder="Phone Number *" required>
       <textarea placeholder="Anything you'd like us to know?"></textarea>
       <button class="submit-btn" onclick="submitForm('RENT')">Submit</button>
     </div>
@@ -374,7 +395,7 @@ textarea { resize: vertical; min-height: 90px; }
         </select>
       </div>
       <input type="text" placeholder="Expected Rent (per month)" required>
-      <input type="tel"  placeholder="Phone Number *" required>
+      <input type="tel" placeholder="Phone Number *" required>
       <textarea placeholder="Anything you'd like us to know?"></textarea>
       <button class="submit-btn" onclick="submitForm('MANAGE')">Submit</button>
     </div>
@@ -397,7 +418,6 @@ textarea { resize: vertical; min-height: 90px; }
     MANAGE: { formId: 'manageForm', title: 'Rent Out', subtitle: "Let us take care of your property while you sit back and relax." }
   };
 
-  /* Box clicks */
   document.querySelectorAll('.box').forEach(function (box) {
     box.addEventListener('click', function () {
       var key = this.dataset.form;
@@ -414,7 +434,6 @@ textarea { resize: vertical; min-height: 90px; }
     var cfg = CONFIG[key];
     if (!cfg) return;
 
-    /* hide all forms, show the right one */
     allForms.forEach(function (id) {
       document.getElementById(id).style.display = 'none';
     });
@@ -423,7 +442,6 @@ textarea { resize: vertical; min-height: 90px; }
     modalTitle.textContent = cfg.title + ' Questionnaire';
     modalSub.textContent   = cfg.subtitle;
 
-    /* show modal then trigger CSS transition on next frame */
     modal.style.display = 'flex';
     requestAnimationFrame(function () {
       modal.classList.add('is-open');
