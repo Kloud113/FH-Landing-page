@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Real Estate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: linear-gradient(135deg, #FFE3B2 0%, #FF914D 45%, #FF3532 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #FFE3B2;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.container {
+  position: relative;
+  width: 90vw;
+  max-width: 900px;
+  height: 80vh;
+  max-height: 800px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Boxes — press glow effect kept, transition only on transform+box-shadow */
+.box {
+  background-color: rgba(0,0,0,0.15);
+  border: 1px solid rgba(255,227,178,0.2);
+  color: #FFE3B2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  border-radius: 16px;
+  cursor: pointer;
+  padding: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  user-select: none;
+  touch-action: manipulation;
+  will-change: transform;
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .box:hover {
+    background-color: rgba(0,0,0,0.25);
+    transform: scale(1.03);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+    border-color: rgba(255,227,178,0.4);
+  }
+}
+
+.box.is-pressed {
+  transform: scale(0.88);
+  background-color: rgba(255,227,178,0.25);
+  box-shadow:
+    0 0 45px rgba(255,227,178,0.9),
+    0 0 80px rgba(255,227,178,0.35),
+    inset 0 0 25px rgba(255,227,178,0.6);
+  border-color: rgba(255,227,178,1);
+}
+
+/* Logo circle */
+.logo-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: #FFE3B2;
+  z-index: 10;
+  background: rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,227,178,0.3);
+  pointer-events: none;
+  animation: pulse 3s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255,227,178,0.4); }
+  70%  { box-shadow: 0 0 0 25px rgba(255,227,178,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,227,178,0); }
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255,227,178,0.2);
+  border-radius: 16px;
+  padding: 40px;
+  width: 90%;
+  max-width: 520px;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  max-height: 90vh;
+  overflow-y: auto;
+  will-change: transform, opacity;
+  /* animation triggered by class */
+  opacity: 0;
+  transform: translateY(16px);
+  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.18s ease;
+}
+
+.modal.is-open .modal-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1;
+  color: rgba(255,227,178,0.6);
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color 0.15s;
+}
+.close-btn:hover { color: #FFE3B2; }
+
+.modal h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+  color: #FFE3B2;
+}
+
+.modal-subtitle {
+  margin-bottom: 22px;
+  color: rgba(255,227,178,0.75);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 14px;
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(255,227,178,0.3);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Space Grotesk', sans-serif;
+  color: #FFE3B2;
+  appearance: none;
+  -webkit-appearance: none;
+  /* targeted transitions only — no 'all' */
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(255,227,178,0.55);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #FFE3B2;
+  background: rgba(0,0,0,0.25);
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23FFE3B2' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+select option { background: #3a1a00; color: #FFE3B2; }
+
+select.ph { color: rgba(255,227,178,0.55); }
+
+textarea { resize: vertical; min-height: 90px; }
+
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  margin-top: 6px;
+  background-color: #FFE3B2;
+  color: #FF3532;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  cursor: pointer;
+  will-change: transform;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.submit-btn:hover  { background-color: #ffffff; transform: translateY(-2px); }
+.submit-btn:active { transform: translateY(0); }
+
+/* Rent Out button label */
+.box-rentout { flex-direction: column; gap: 4px; }
+.box-rentout .label-sub {
+  font-size: 0.52rem;
+  font-weight: 400;
+  letter-spacing: 1.4px;
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  .container     { gap: 12px; }
+  .logo-circle   { width: 100px; height: 100px; font-size: 1rem; }
+  .box           { font-size: 1.2rem; padding: 15px; }
+  .form-row      { grid-template-columns: 1fr; }
+  .modal-content { padding: 28px 20px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="box" data-form="BUY">Buy</div>
+  <div class="box" data-form="SELL">Sell</div>
+  <div class="box" data-form="RENT">Rent</div>
+  <div class="box box-rentout" data-form="MANAGE">
+    <span>RENT <em>OUT</em></span>
+    <span class="label-sub">(for homeowners)</span>
+  </div>
+  <div class="logo-circle">LOGO</div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" id="closeBtn">&times;</button>
+    <h2 id="modalTitle"></h2>
+    <p class="modal-subtitle" id="modalSubtitle"></p>
+
+    <!-- BUY -->
+    <div id="buyForm" class="form-grid" style="display:none;">
+      <input type="text" placeholder="Name *" required>
+      <input type="text" placeholder="Location (incl. East/West if applicable)" required>
+      <div class="form-row">
+        <select class="ph" onchange="this.classList.remove('ph')">
+          <option value="" disabled selected hidden>BHK</option>
+          <option>1 BHK</option><option>2 BHK</option><option>3 BHK</option>
+          <option>4 BHK</option><option>5 BHK</option><option>6 BHK</option>
+        </select>
+        <select class="ph" onchange="this.classList.remove('ph')">
+          <option value="" disabled selected hidden>Car Park</option>
+          <option>0</option><option>1</option><option>2</option>
+          <option>3</option><option>4</option><option>5</option>
+        </select>
+      </div>
+      <input type="text" placeholder="Budget" required>
+      <input type="tel"  placeholder="Phone Number *" required>
+      <textarea placeholder="Anything you'd like us to know?"></textarea>
+      <button class="submit-btn" onclick="submitForm('BUY')">Submit</button>
+    </div>
+
+    <!-- SELL -->
+    <div id="sellForm" class="form-grid" style="display:none;">
+      <input type="text" placeholder="Name *" required>
+      <input type="text" placeholder="Location (incl. East/West if applicable)" required>
+      <div class="form-row">
+        <select class="ph" onchange="this.classList.remove('ph')">
+          <option value="" disabled selected hidden>BHK</option>
+          <option>1 BHK</option><option>2 BHK</option><option>3 BHK</option>
+          <option>4 BHK</option><option>5 BHK</option><option>6 BHK</option>
+        </select>
+        <select class="ph" onchange="this.classList.remove('ph')">
+          <option value="" disabled selected hidden>Car Park</option>
+          <option>0</option><option>1</option><option>2</option>
+          <option>3</option><option>4</option><option>5</option>
+        </select>
+      </div>
+      <input type="text" placeholder="Expected Price" required>
+      <input type="tel"  placeholder="Phone Number *" required>
+      <textarea placeholder="Anything you'd like us to know?"></textarea>
+      <button class="submit-btn" onclick="submitForm('SELL')">Submit</button>
+    </div>
+
+    <!-- RENT -->
+    <div id="rentForm" class="form-grid" style="display:none;">
+      <input type="text" placeholder="Name *" required>
+      <input type="text" placeholder="Location (incl. East/West if applicable)" required>
+      <div class="form-row">
+        <select class="ph" onchange="this.classList.remove('ph')">
+          <option value="" disabled selected hidden>BHK</option>
+          <option>1 BHK</option><option>2 BHK</option><option>3 BHK</option>
+          <option>4 BHK</option><option>5 BHK</option><option>6 BHK</option>
+        </select>
+        <select class="ph" onchange="this.classList.remove('ph')">
+          <option value="" disabled selected hidden>Car Park</option>
+          <option>0</option><option>1</option><option>2</option>
+          <option>3</option><option>4</option><option>5</option>
+        </select>
+      </div>
+      <input type="text" placeholder="Budget (per month)" required>
+      <input type="tel"  placeholder="Phone Number *" required>
+      <textarea placeholder="Anything you'd like us to know?"></textarea>
+      <button class="submit-btn" onclick="submitForm('RENT')">Submit</button>
+    </div>
+
+    <!-- RENT OUT / MANAGE -->
+    <div id="manageForm" class="form-grid" style="display:none;">
+      <input type="text" placeholder="Name *" required>
+      <input type="text" placeholder="Location (incl. East/West if applicable)" required>
+      <div class="form-row">
+        <select class="ph" onchange="this.classList.remove('ph')">
+          <option value="" disabled selected hidden>BHK</option>
+          <option>1 BHK</option><option>2 BHK</option><option>3 BHK</option>
+          <option>4 BHK</option><option>5 BHK</option><option>6 BHK</option>
+        </select>
+        <select class="ph" onchange="this.classList.remove('ph')">
+          <option value="" disabled selected hidden>Car Park</option>
+          <option>0</option><option>1</option><option>2</option>
+          <option>3</option><option>4</option><option>5</option>
+        </select>
+      </div>
+      <input type="text" placeholder="Expected Rent (per month)" required>
+      <input type="tel"  placeholder="Phone Number *" required>
+      <textarea placeholder="Anything you'd like us to know?"></textarea>
+      <button class="submit-btn" onclick="submitForm('MANAGE')">Submit</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+
+  var modal      = document.getElementById('modal');
+  var modalTitle = document.getElementById('modalTitle');
+  var modalSub   = document.getElementById('modalSubtitle');
+  var allForms   = ['buyForm','sellForm','rentForm','manageForm'];
+
+  var CONFIG = {
+    BUY:    { formId: 'buyForm',    title: 'Buy',      subtitle: "Tell us what you're looking for and we'll find the perfect match." },
+    SELL:   { formId: 'sellForm',   title: 'Sell',     subtitle: "Let us help you get the best value for your property." },
+    RENT:   { formId: 'rentForm',   title: 'Rent',     subtitle: "Tell us what you need and we'll find the right place for you." },
+    MANAGE: { formId: 'manageForm', title: 'Rent Out', subtitle: "Let us take care of your property while you sit back and relax." }
+  };
+
+  /* Box clicks */
+  document.querySelectorAll('.box').forEach(function (box) {
+    box.addEventListener('click', function () {
+      var key = this.dataset.form;
+      this.classList.add('is-pressed');
+      var self = this;
+      setTimeout(function () {
+        self.classList.remove('is-pressed');
+        setTimeout(function () { openModal(key); }, 80);
+      }, 160);
+    });
+  });
+
+  function openModal(key) {
+    var cfg = CONFIG[key];
+    if (!cfg) return;
+
+    /* hide all forms, show the right one */
+    allForms.forEach(function (id) {
+      document.getElementById(id).style.display = 'none';
+    });
+    document.getElementById(cfg.formId).style.display = 'flex';
+
+    modalTitle.textContent = cfg.title + ' Questionnaire';
+    modalSub.textContent   = cfg.subtitle;
+
+    /* show modal then trigger CSS transition on next frame */
+    modal.style.display = 'flex';
+    requestAnimationFrame(function () {
+      modal.classList.add('is-open');
+    });
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    setTimeout(function () {
+      modal.style.display = 'none';
+    }, 220);
+  }
+
+  document.getElementById('closeBtn').addEventListener('click', closeModal);
+
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  window.submitForm = function (key) {
+    alert("Thank you! We'll be in touch shortly.");
+    closeModal();
+    var form = document.getElementById(CONFIG[key].formId);
+    form.querySelectorAll('input, textarea').forEach(function (el) { el.value = ''; });
+    form.querySelectorAll('select').forEach(function (sel) {
+      sel.selectedIndex = 0;
+      sel.classList.add('ph');
+    });
+  };
+
+})();
+</script>
+</body>
+</html>
